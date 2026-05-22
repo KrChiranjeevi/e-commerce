@@ -1,0 +1,86 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-frontend:
+    name: Build Frontend (React/Vite)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install Frontend Dependencies
+        run: npm ci
+        working-directory: client
+
+      - name: Build Frontend
+        run: npm run build
+        working-directory: client
+
+  build-backend:
+    name: Build & Verify Backend (Express)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: server/package-lock.json
+
+      - name: Install Backend Dependencies
+        run: npm ci
+        working-directory: server
+
+  deploy:
+    name: Deploy to AWS (Future Setup)
+    needs: [build-frontend, build-backend]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Ready for AWS Deployment
+        run: |
+          echo "CI/CD build steps passed successfully!"
+          echo "To enable AWS deployment, uncomment the deployment steps in .github/workflows/ci-cd.yml and add your credentials to GitHub Secrets."
+
+      # Example 1: Deploy Frontend to AWS S3 (Uncomment and configure when ready)
+      # - name: Configure AWS Credentials
+      #   uses: aws-actions/configure-aws-credentials@v4
+      #   with:
+      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     aws-region: us-east-1
+      #
+      # - name: Deploy Frontend to S3
+      #   run: |
+      #     aws s3 sync client/dist/ s3://your-aws-s3-bucket-name --delete
+
+      # Example 2: Deploy Backend/Frontend to AWS Elastic Beanstalk (Uncomment and configure when ready)
+      # - name: Deploy to Elastic Beanstalk
+      #   uses: einaregilsson/beanstalk-deploy@v22
+      #   with:
+      #     aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     application_name: my-ecommerce-app
+      #     environment_name: my-ecommerce-env
+      #     version_label: ${{ github.sha }}
+      #     region: us-east-1
+      #     deployment_package: deploy.zip
