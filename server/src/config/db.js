@@ -1,15 +1,28 @@
 const mongoose = require('mongoose');
 
-const connectDB = async () => {
-    try {
-        if (!process.env.MONGO_URI) {
-            throw new Error("MONGO_URI environment variable is not defined!");
-        }
-        const conn = await mongoose.connect(process.env.MONGO_URI);
-        console.log(`MongoDB Connected: ${conn.connection.host}`);
-    } catch (error) {
-        console.error(`Database Connection Error: ${error.message}`);
+const connectDB = async (retries = 5, delay = 5000) => {
+    if (!process.env.MONGO_URI) {
+        console.error('MONGO_URI environment variable is not defined!');
         process.exit(1);
+    }
+
+    for (let i = 1; i <= retries; i++) {
+        try {
+            const conn = await mongoose.connect(process.env.MONGO_URI, {
+                serverSelectionTimeoutMS: 10000,
+            });
+            console.log(`MongoDB Connected: ${conn.connection.host}`);
+            return;
+        } catch (error) {
+            console.error(`DB Connection attempt ${i}/${retries} failed: ${error.message}`);
+            if (i < retries) {
+                console.log(`Retrying in ${delay / 1000}s...`);
+                await new Promise((res) => setTimeout(res, delay));
+            } else {
+                console.error('All DB connection attempts failed. Exiting.');
+                process.exit(1);
+            }
+        }
     }
 };
 
