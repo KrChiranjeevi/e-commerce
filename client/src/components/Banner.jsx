@@ -8,20 +8,42 @@ const slides = [
         id: 1,
         image: 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=2070&q=80',
         title: 'End of Season Sale',
-        subtitle: 'Up to 80% OFF'
+        subtitle: 'Up to 80% OFF — Shop Now',
+        badge: '🔥 HOT DEALS',
+        cta: 'Shop Sale'
     },
     {
         id: 2,
         image: 'https://images.unsplash.com/photo-1550009158-9ebf69173e03?auto=format&fit=crop&w=2070&q=80',
         title: 'New Electronics',
-        subtitle: 'Latest Gadgets & Gizmos'
+        subtitle: 'Latest Gadgets & Gizmos',
+        badge: '⚡ NEW ARRIVALS',
+        cta: 'Shop Electronics'
     },
     {
         id: 3,
         image: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=2070&q=80',
         title: 'Fashion Week',
-        subtitle: 'Trendy Collections'
-    }
+        subtitle: 'Trendy Collections 2025',
+        badge: '👗 FASHION',
+        cta: 'Shop Fashion'
+    },
+    {
+        id: 4,
+        image: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=2070&q=80',
+        title: 'Home Makeover',
+        subtitle: 'Premium Furniture & Decor',
+        badge: '🏠 HOME',
+        cta: 'Shop Home'
+    },
+    {
+        id: 5,
+        image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&w=2070&q=80',
+        title: 'Top Mobiles',
+        subtitle: 'iPhone 15, Samsung S24 & More',
+        badge: '📱 MOBILES',
+        cta: 'Shop Mobiles'
+    },
 ];
 
 const Banner = () => {
@@ -29,11 +51,23 @@ const Banner = () => {
     const containerRef = useRef(null);
 
     useGSAP(() => {
-        gsap.fromTo('.slide-text', 
-            { y: 30, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.8, stagger: 0.2, ease: "power3.out" }
+        gsap.fromTo('.slide-badge',
+            { opacity: 0, scale: 0.7, y: -20 },
+            { opacity: 1, scale: 1, y: 0, duration: 0.5, ease: 'back.out(1.7)' }
         );
-    }, { dependencies: [current], scope: containerRef }); // Re-run animation when slide changes
+        gsap.fromTo('.slide-title',
+            { opacity: 0, x: -60 },
+            { opacity: 1, x: 0, duration: 0.7, delay: 0.2, ease: 'power3.out' }
+        );
+        gsap.fromTo('.slide-sub',
+            { opacity: 0, x: -40 },
+            { opacity: 1, x: 0, duration: 0.6, delay: 0.35, ease: 'power3.out' }
+        );
+        gsap.fromTo('.slide-cta',
+            { opacity: 0, y: 20 },
+            { opacity: 1, y: 0, duration: 0.5, delay: 0.5, ease: 'power2.out' }
+        );
+    }, { dependencies: [current], scope: containerRef });
 
     const nextSlide = () => {
         setCurrent(current === slides.length - 1 ? 0 : current + 1);
@@ -72,18 +106,50 @@ const Banner = () => {
                         <div style={{
                             position: 'absolute',
                             inset: 0,
-                            background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%)',
+                            background: 'linear-gradient(135deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.2) 60%, transparent 100%)',
                             display: 'flex',
                             flexDirection: 'column',
                             justifyContent: 'flex-end',
                             padding: '3rem'
                         }}>
-                            <h2 style={{ fontSize: '3.5rem', marginBottom: '0.5rem', color: 'white', textShadow: '0 2px 4px rgba(0,0,0,0.3)', fontWeight: 800, letterSpacing: '-0.03em' }} className="slide-text">
+                            <div className="slide-badge" style={{
+                                display: 'inline-block',
+                                background: 'var(--primary)',
+                                color: 'white',
+                                padding: '0.3rem 1rem',
+                                borderRadius: '999px',
+                                fontSize: '0.8rem',
+                                fontWeight: 700,
+                                letterSpacing: '0.05em',
+                                marginBottom: '1rem',
+                                width: 'fit-content'
+                            }}>
+                                {slide.badge}
+                            </div>
+                            <h2 style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)', marginBottom: '0.5rem', color: 'white', textShadow: '0 2px 10px rgba(0,0,0,0.4)', fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.1 }} className="slide-title">
                                 {slide.title}
                             </h2>
-                            <p style={{ fontSize: '1.5rem', color: 'rgba(255,255,255,0.9)', fontWeight: 500 }} className="slide-text">
+                            <p style={{ fontSize: 'clamp(1rem, 2.5vw, 1.4rem)', color: 'rgba(255,255,255,0.9)', fontWeight: 500, marginBottom: '1.5rem' }} className="slide-sub">
                                 {slide.subtitle}
                             </p>
+                            <button className="slide-cta" style={{
+                                background: 'white',
+                                color: 'var(--primary)',
+                                border: 'none',
+                                padding: '0.75rem 2rem',
+                                borderRadius: '999px',
+                                fontWeight: 700,
+                                fontSize: '1rem',
+                                cursor: 'pointer',
+                                width: 'fit-content',
+                                transition: 'transform 0.2s, box-shadow 0.2s',
+                                boxShadow: '0 4px 15px rgba(0,0,0,0.2)'
+                            }}
+                                onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.05)'; e.currentTarget.style.boxShadow = '0 8px 25px rgba(0,0,0,0.3)'; }}
+                                onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)'; }}
+                            >
+                                {slide.cta} →
+                            </button>
                         </div>
                     </div>
                 ))}
