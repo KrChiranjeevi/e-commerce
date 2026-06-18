@@ -7,20 +7,16 @@
       "config": {
         "distDir": "dist"
       }
-    },
-    {
-      "src": "server/src/index.js",
-      "use": "@vercel/node"
     }
   ],
   "rewrites": [
     {
       "source": "/api/:match*",
-      "destination": "server/src/index.js"
+      "destination": "https://e-commerce-amrn.onrender.com/api/:match*"
     },
     {
       "source": "/uploads/:match*",
-      "destination": "server/src/index.js"
+      "destination": "https://e-commerce-amrn.onrender.com/uploads/:match*"
     },
     {
       "source": "/((?!api|uploads).*)",
